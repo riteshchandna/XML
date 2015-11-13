@@ -1,0 +1,164 @@
+n<!DOCTYPE html>
+<html>
+<head>
+<title>XML < / title >
+<script>
+var xmlDoc;
+var text;
+function htmlTable(xmlDoc)
+{
+	text = "<html><head>";
+	text += "<title>Real Estate Listings</title>";
+	text += "</head><body>";
+	text += "<h2>Real Estate Listings</h2>";
+	text += "<table border=3>"
+		list_element = xmlDoc.getElementsByTagName("Listing");
+	if (list_element.length == 0)
+	{
+		alert("ERROR: No Listing in XML File");
+		text = null;
+		return null;
+	}
+	for (i = 0; i < list_element.length; i++)
+	{
+		text += "<tr><th colspan=7>" + list_element[i].nodeName + "</th></tr>";
+		list_children = list_element.item(i).childNodes;
+		for (j = 0; j < list_children.length; j++)
+		{
+
+			if (list_children.item(j).nodeType == 1)
+			{
+				if (list_children[j].nodeName == "ListingDetails")
+				{
+					text += "<tr><th>Details</th>";
+				}
+				else
+				{
+					text += "<tr><th>" + list_children[j].nodeName + "</th>";
+				}
+				leaf_child = list_children.item(j).childNodes;
+
+				for (k = 0; k < leaf_child.length; k++)
+				{
+
+					if (leaf_child.item(k).nodeType == 1)
+					{
+						if (leaf_child.item(k).nodeName == "Image")
+						{
+							text += "<th colspan=3>" + leaf_child.item(k).nodeName + "</th>";
+						}
+						else
+							if (leaf_child.item(k).nodeName == "StreetAddress")
+							{
+							text += "<th>Street</th>";
+							}
+							else
+								if (leaf_child.item(k).nodeName == "ListingUrl")
+								{
+							text += "<th>Listing URL</th>";
+								}
+								else
+								{
+									text += "<th>";
+									text += (leaf_child.item(k).nodeName + " ");
+									text += "</th>"
+								}
+
+					}
+				}
+				text += "</tr><tr><td>&nbsp;</td>"
+
+
+					for (k = 0; k < leaf_child.length; k++)
+					{
+					if (leaf_child.item(k).nodeType == 1)
+					{
+						if (leaf_child.item(k).nodeName == "Image")
+						{
+							text += "<td colspan=3><img src='" + leaf_child.item(k).firstChild.nodeValue + "' width=200 height=150 &nbsp;</td>";
+						}
+						else if (leaf_child.item(k).nodeName == "ListingUrl")
+						{
+							text += "<td><a href='" + leaf_child.item(k).firstChild.nodeValue + "'>Link to listing</a> &nbsp;</td>";
+						}
+						else
+						{
+							text += "<td>" + leaf_child.item(k).firstChild.nodeValue + "&nbsp;</td>";
+						}
+
+					}
+					}
+				text += "</tr>";
+			}
+		}
+	}
+	text += "</table>";
+	text += "</bo" + "dy></html>";
+}
+
+function extractxml(input)
+{
+	var readFile = input.extract.value;
+	if (readFile == "")
+	{
+		alert("ERROR: Text Box cannot be left empty");
+		return;
+	}
+	xmlDoc = loadXml(readFile);
+	if (xmlDoc.documentElement.nodeName == "parsererror")
+	{
+		alert("Error in XML File");
+		return;
+	}
+	xmlDoc.onload = htmlTable(xmlDoc);
+	if (text == null)
+	{
+		return;
+	}
+	hWin = window.open("", "HW4_CSCI571");
+	hWin.document.write(text);
+	hWin.document.close();
+
+
+}
+
+function loadXml(readFile)
+{
+	if (window.XMLHttpRequest)
+	{
+		xHttp = new XMLHttpRequest();
+	}
+	else
+	{
+		xHttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xHttp.open("GET", readFile, false);
+	xHttp.send();
+	if (xHttp.status == 404)
+	{
+		alert("XML File not found");
+		return;
+	}
+	xmlDOC = xHttp.responseXML;
+	return xmlDOC;
+}
+< / script>
+< / head>
+<body>
+<br><br><br>
+<center>
+<b>Enter URL for Real Estate Catalog XML File< / b><br><br>
+<form name = "xmlform" method = "POST" id = "window">
+<input type = "text" id = "extract" value = "realestate.xml"><br><br>
+<input type = "button" value = "Submit Query" onClick = "extractxml(this.form)">
+< / form>
+< / center>
+<noscript>
+< / body>
+< / html>
+
+
+
+
+
+
